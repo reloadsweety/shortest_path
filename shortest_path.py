@@ -10,10 +10,10 @@ class Roadmap(object):
         self.initial_data(file_name)
 
     def validate(self, start_node, goal_node):
-        if start_node not in self.road_maps:
+        if start_node not in self.road_maps.keys():
             return (False, 'No have start node in road map')
 
-        if goal_node not in self.road_maps:
+        if goal_node not in self.road_maps.keys():
             return (False, 'No have end node in road map')
 
         if start_node == goal_node:
@@ -27,11 +27,11 @@ class Roadmap(object):
             for row in csv_reader:
                 point_1, point_2, cost = row
 
-                if point_1 not in self.road_maps:
+                if point_1 not in self.road_maps.keys():
                     self.road_maps[point_1] = {}
                 self.road_maps[point_1][point_2] = int(cost) if cost else 0
 
-                if point_2 not in self.road_maps:
+                if point_2 not in self.road_maps.keys():
                     self.road_maps[point_2] = {}
                 self.road_maps[point_2][point_1] = int(cost) if cost else 0
 
