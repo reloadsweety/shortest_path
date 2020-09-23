@@ -4,17 +4,16 @@ import unittest
 
 class Roadmap(object):
     road_maps = {}
-    all_points = set()
     answers = []
 
     def __init__(self, file_name):
         self.initial_data(file_name)
 
     def validate(self, start_node, goal_node):
-        if start_node not in self.all_points:
+        if start_node not in self.road_maps:
             return (False, 'No have start node in road map')
 
-        if goal_node not in self.all_points:
+        if goal_node not in self.road_maps:
             return (False, 'No have end node in road map')
 
         if start_node == goal_node:
@@ -27,11 +26,6 @@ class Roadmap(object):
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
                 point_1, point_2, cost = row
-
-                if point_1:
-                    self.all_points.add(point_1)
-                if point_2:
-                    self.all_points.add(point_2)
 
                 if point_1 not in self.road_maps:
                     self.road_maps[point_1] = {}
