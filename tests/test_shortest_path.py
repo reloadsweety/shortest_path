@@ -1,11 +1,11 @@
 import unittest
 
-from ..shortest_path_rf import Roadmap
+from ..shortest_path import Roadmap
 
 
 class TestShortestPath(unittest.TestCase):
     def setUp(self):
-        self.road_map = Roadmap()
+        self.road_map = Roadmap("path_data.csv")
         self.road_map.answers = []
 
     def test_start_node_or_goal_node_not_in_road_maps_should_validate_false(self):
