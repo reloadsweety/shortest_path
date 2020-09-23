@@ -1,5 +1,4 @@
 import csv
-# import json
 import unittest
 
 
@@ -61,11 +60,9 @@ class Roadmap(object):
             return message
 
         self.shortest_path(start_node, goal_node, [], 0)
+
         if self.answers:
-
-
             answers = sorted(self.answers, key=lambda x: x['cost'])
-
             return ('Shortest path from {} to {} is {} and have cost {}'.format(
                 start_node,
                 goal_node,
