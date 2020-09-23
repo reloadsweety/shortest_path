@@ -3,92 +3,82 @@ import csv
 import unittest
 
 
-road_maps = {}
-all_points = set()
+class Roadmap(object):
+    road_maps = {}
+    all_points = set()
+    answers = []
 
-answers = []
+    def __init__(self, file_name):
+        self.initial_data(file_name)
 
+    def validate(self, start_node, goal_node):
+        if start_node not in self.all_points:
+            return (False, 'No have start node in road map')
 
-with open('path_data.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    for row in csv_reader:
-        point_1, point_2, cost = row
-        # print(point_1, 'to', point_2, 'is', cost)
+        if goal_node not in self.all_points:
+            return (False, 'No have end node in road map')
 
-        if point_1:
-            all_points.add(point_1)
-        if point_2:
-            all_points.add(point_2)
+        if start_node == goal_node:
+            return (False, 'start_node should differenct goal_node')
 
-        if point_1 not in road_maps:
-            road_maps[point_1] = {}
-        road_maps[point_1][point_2] = int(cost) if cost else 0
+        return (True, None)
 
-        if point_2 not in road_maps:
-            road_maps[point_2] = {}
-        road_maps[point_2][point_1] = int(cost) if cost else 0
+    def initial_data(self, file_name):
+        with open(file_name) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row in csv_reader:
+                point_1, point_2, cost = row
 
-    # print('All point: ', all_points)
-    # print('road_map:', json.dumps(road_maps, indent=2))
-    # print(f'Processed {line_count} lines.')
+                if point_1:
+                    self.all_points.add(point_1)
+                if point_2:
+                    self.all_points.add(point_2)
 
+                if point_1 not in self.road_maps:
+                    self.road_maps[point_1] = {}
+                self.road_maps[point_1][point_2] = int(cost) if cost else 0
 
-def shortest_path(start, goal, path=[], cost=0):
-    if start in path:
-        return
+                if point_2 not in self.road_maps:
+                    self.road_maps[point_2] = {}
+                self.road_maps[point_2][point_1] = int(cost) if cost else 0
 
-    path.append(start)
-    # print('path', start, path)
-    if goal in path:
-        answers.append({"cost": cost, "path": path})
-        # print('answers', {"cost": cost, "path": path})
-        return
+    def shortest_path(self, start, goal, path, cost):
+        if start in path:
+            return
 
-    for point in road_maps[start]:
-        if point not in path:
-            # print(path, start, '->', point, cost+road_maps[start][point])
-            shortest_path(point, goal, list(path), int(cost+road_maps[start][point]))
+        path.append(start)
+        if goal in path:
+            self.answers.append({"cost": cost, "path": path})
+            return
 
+        for point in self.road_maps[start]:
+            if point not in path:
+                self.shortest_path(point, goal, list(path), int(cost + self.road_maps[start][point]))
 
-# shortest_path("A", "G", [], 0)
-# print(answers)
+    def find_shortest_path(self, start_node, goal_node):
+        valid, message = self.validate(start_node, goal_node)
+        if not valid:
+            return message
 
-start_node = input("Enter your start_node: ")
-goal_node = input("Enter your goal_node: ")
-
-
-if start_node not in all_points:
-    print('No have start node in road map')
-
-if goal_node not in all_points:
-    print('No have end node in road map')
-
-if start_node == goal_node:
-    print('start_node should differenct goal_node')
-
-shortest_path(start_node, goal_node)
-if answers:
-    print('All path can go')
-    answers = sorted(answers, key=lambda x: x['cost'])
-    for ans in answers:
-        print(ans)
-
-    print('Shortest path: {} with cost: {}'.format(" -> ".join(answers[0]['path']), answers[0]['cost']))
+        self.shortest_path(start_node, goal_node, [], 0)
+        if self.answers:
 
 
-# print('{} -> {} is '.format(start_node, goal_node))
+            answers = sorted(self.answers, key=lambda x: x['cost'])
+
+            return ('Shortest path from {} to {} is {} and have cost {}'.format(
+                start_node,
+                goal_node,
+                " -> ".join(answers[0]['path']),
+                answers[0]['cost']))
+        else:
+            return 'No path found from {} to {}'.format(start_node, goal_node)
 
 
-class TestShortestPath(unittest.TestCase):
-    def setUp(self):
-        pass
+if __name__ == '__main__':
+    file_name = input("Enter your file name: ")
+    start_node = input("Enter your start_node: ")
+    goal_node = input("Enter your goal_node: ")
 
-    def test_start_node_or_goal_node_not_in_road_maps_should_validate_false(self):
-        pass
-
-    def test_start_node_or_goal_node_not_in_road_maps_should_validate_false(self):
-        pass
-
-
-# if __name__ == '__main__':
-#     unittest.main()
+    road_map = Roadmap(file_name)
+    print(road_map.find_shortest_path(start_node, goal_node))
